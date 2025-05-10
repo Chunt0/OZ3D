@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-const FallingObject: React.FC = () => {
+interface FallingObjectProps {
+  src: string;
+}
+const FallingObject: React.FC<FallingObjectProps> = ({ src }) => {
   const [position, setPosition] = useState<{ left: number; top: number }>({
     left: Math.random() * 100,
     top: -10,
@@ -31,7 +34,7 @@ const FallingObject: React.FC = () => {
 
   return (
     <img
-      src="/src/assets/falling-image.png"
+      src={src}
       style={{
         position: 'absolute',
         left: `${position.left}%`,

@@ -1,11 +1,27 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
+import backgroundVideo from './assets/background-video.mp4';
+import fallingImage from './assets/falling-image.png';
 import FallingObject from './FallingObject';
 
 const App: React.FC = () => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    // Programmatically start playback
+    if (videoRef.current) {
+      videoRef.current.play().catch((e) => {
+        console.log('Play was prevented:', e);
+      });
+    }
+  }, []);
+
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
-      {/* Background Video */}
+
+      {/* Video with ref and attributes */}
       <video
+        ref={videoRef}
+        src={backgroundVideo}
         autoPlay
         loop
         playsInline
@@ -18,11 +34,10 @@ const App: React.FC = () => {
           objectFit: 'cover',
           zIndex: -1,
         }}
-        src="/src/assets/background-video.mp4"
       />
 
-      {/* Falling Image */}
-      <FallingObject />
+      <FallingObject src={fallingImage} />
+
     </div>
   );
 };
