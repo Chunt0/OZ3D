@@ -5,7 +5,7 @@ const FallingObject: React.FC = () => {
     left: Math.random() * 100,
     top: -10,
   });
-  const requestRef = useRef<number>();
+  const requestRef = useRef<number | null>(null);
 
   const moveSpeed = 0.2; // percentage per frame; tweak for slow falling
 
