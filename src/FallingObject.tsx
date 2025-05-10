@@ -18,7 +18,7 @@ const FallingObject: React.FC<FallingObjectProps> = ({ src }) => {
       if (newTop > 110) {
         // Reset to top with new left position
         return {
-          left: Math.random() * 100,
+          left: Math.random() * 60,
           top: -10,
         };
       }
