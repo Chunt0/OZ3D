@@ -10,7 +10,7 @@ const FallingObject: React.FC<FallingObjectProps> = ({ src }) => {
   });
   const requestRef = useRef<number | null>(null);
 
-  const moveSpeed = 0.2; // percentage per frame; tweak for slow falling
+  const moveSpeed = 0.4; // percentage per frame; tweak for slow falling
 
   const updatePosition = () => {
     setPosition(prev => {
@@ -18,7 +18,7 @@ const FallingObject: React.FC<FallingObjectProps> = ({ src }) => {
       if (newTop > 110) {
         // Reset to top with new left position
         return {
-          left: Math.random() * 60,
+          left: Math.random() * 30,
           top: -10,
         };
       }
