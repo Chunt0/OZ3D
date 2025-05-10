@@ -1,22 +1,33 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import backgroundVideo from './assets/background-video.mp4';
 import fallingImage from './assets/falling-image.png';
 import FallingObject from './FallingObject';
 
 const App: React.FC = () => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-
   useEffect(() => {
-    // Programmatically start playback
-    if (videoRef.current) {
-      videoRef.current.play().catch((e) => {
-        console.log('Play was prevented:', e);
-      });
-    }
+    document.title = "OZ3D";
   }, []);
 
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+
+  const [muted, setMuted] = useState(true);
+
+  const handleAnyUserInteraction = () => {
+    if (muted) {
+      setMuted(false);
+      if (videoRef.current) {
+        videoRef.current.play().catch(() => {
+
+        });
+      }
+    }
+  }
+
   return (
-    <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
+    <div style={{ position: 'relative', width: '100vw', height: '100vh', cursor: 'pointer' }}
+      onClick={handleAnyUserInteraction}
+      onTouchStart={handleAnyUserInteraction}>
 
       {/* Video with ref and attributes */}
       <video
@@ -25,6 +36,7 @@ const App: React.FC = () => {
         autoPlay
         loop
         playsInline
+        muted={muted}
         style={{
           position: 'absolute',
           top: 0,
