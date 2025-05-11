@@ -5,7 +5,7 @@ interface FallingObjectProps {
 }
 const FallingObject: React.FC<FallingObjectProps> = ({ src }) => {
   const [position, setPosition] = useState<{ left: number; top: number }>({
-    left: Math.random() * 100,
+    left: Math.random() * 30,
     top: -10,
   });
   const requestRef = useRef<number | null>(null);
