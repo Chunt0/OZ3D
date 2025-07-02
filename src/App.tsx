@@ -7,14 +7,21 @@ const App: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const selectRandomVideo = async () => {
+    console.log('Selecting random video...');
     const webmVideos = import.meta.glob('./assets/videos/*.webm') as Record<string, () => Promise<{ default: string }>>;
     const mp4Videos = import.meta.glob('./assets/videos/*.mp4') as Record<string, () => Promise<{ default: string }>>;
 
     const webmPaths = Object.keys(webmVideos);
-    if (webmPaths.length === 0) return;
+    console.log('Available webm videos:', webmPaths);
+    if (webmPaths.length === 0) {
+      console.log('No webm videos found.');
+      return;
+    }
 
     const randomWebmPath = webmPaths[Math.floor(Math.random() * webmPaths.length)];
     const correspondingMp4Path = randomWebmPath.replace('.webm', '.mp4');
+    console.log('Selected webm video:', randomWebmPath);
+    console.log('Corresponding mp4 video:', correspondingMp4Path);
 
     const webmModule = await webmVideos[randomWebmPath]();
     let mp4Module = null;
@@ -34,10 +41,11 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (videoRef.current) {
+    console.log('Background video state updated:', backgroundVideo);
+    if (videoRef.current && backgroundVideo.webm) {
+      console.log('Loading and playing video...');
       videoRef.current.load();
       videoRef.current.play().catch(error => {
-        // Autoplay was prevented.
         console.log("Autoplay prevented: ", error);
       });
     }
@@ -47,11 +55,13 @@ const App: React.FC = () => {
 
   const handleAnyUserInteraction = () => {
     if (muted) {
+      console.log('User interaction detected, unmuting video.');
       setMuted(false);
     }
   };
 
   const handleVideoEnd = () => {
+    console.log('Video ended, selecting new video.');
     selectRandomVideo();
   };
 
