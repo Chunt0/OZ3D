@@ -4,44 +4,56 @@ import FallingObject from './FallingObject';
 
 const App: React.FC = () => {
   const [backgroundVideo, setBackgroundVideo] = useState({ webm: '', mp4: '' });
+  const videoRef = useRef<HTMLVideoElement>(null);
 
-  useEffect(() => {
-    document.title = "OZ3D";
-
+  const selectRandomVideo = async () => {
     const webmVideos = import.meta.glob('./assets/videos/*.webm') as Record<string, () => Promise<{ default: string }>>;
     const mp4Videos = import.meta.glob('./assets/videos/*.mp4') as Record<string, () => Promise<{ default: string }>>;
 
     const webmPaths = Object.keys(webmVideos);
+    if (webmPaths.length === 0) return;
+
     const randomWebmPath = webmPaths[Math.floor(Math.random() * webmPaths.length)];
     const correspondingMp4Path = randomWebmPath.replace('.webm', '.mp4');
 
-    webmVideos[randomWebmPath]().then(mod => {
-      setBackgroundVideo(prev => ({ ...prev, webm: mod.default }));
-    });
-
+    const webmModule = await webmVideos[randomWebmPath]();
+    let mp4Module = null;
     if (mp4Videos[correspondingMp4Path]) {
-      mp4Videos[correspondingMp4Path]().then(mod => {
-        setBackgroundVideo(prev => ({ ...prev, mp4: mod.default }));
-      });
+      mp4Module = await mp4Videos[correspondingMp4Path]();
     }
 
+    setBackgroundVideo({
+      webm: webmModule.default,
+      mp4: mp4Module ? mp4Module.default : '',
+    });
+  };
+
+  useEffect(() => {
+    document.title = "OZ3D";
+    selectRandomVideo();
   }, []);
 
-  const videoRef = useRef<HTMLVideoElement>(null);
-
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.load();
+      videoRef.current.play().catch(error => {
+        // Autoplay was prevented.
+        console.log("Autoplay prevented: ", error);
+      });
+    }
+  }, [backgroundVideo]);
 
   const [muted, setMuted] = useState(true);
 
   const handleAnyUserInteraction = () => {
     if (muted) {
       setMuted(false);
-      if (videoRef.current) {
-        videoRef.current.play().catch(() => {
-
-        });
-      }
     }
-  }
+  };
+
+  const handleVideoEnd = () => {
+    selectRandomVideo();
+  };
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh', cursor: 'pointer' }}
@@ -52,9 +64,9 @@ const App: React.FC = () => {
       <video
         ref={videoRef}
         autoPlay
-        loop
         playsInline
         muted={muted}
+        onEnded={handleVideoEnd}
         style={{
           position: 'absolute',
           top: 0,
