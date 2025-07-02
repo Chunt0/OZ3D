@@ -1,11 +1,30 @@
 import React, { useEffect, useRef, useState } from 'react';
-import backgroundVideo from './assets/background-video.mp4';
 import fallingImage from './assets/falling-image.png';
 import FallingObject from './FallingObject';
 
 const App: React.FC = () => {
+  const [backgroundVideo, setBackgroundVideo] = useState({ webm: '', mp4: '' });
+
   useEffect(() => {
     document.title = "OZ3D";
+
+    const webmVideos = import.meta.glob('./assets/videos/*.webm') as Record<string, () => Promise<{ default: string }>>;
+    const mp4Videos = import.meta.glob('./assets/videos/*.mp4') as Record<string, () => Promise<{ default: string }>>;
+
+    const webmPaths = Object.keys(webmVideos);
+    const randomWebmPath = webmPaths[Math.floor(Math.random() * webmPaths.length)];
+    const correspondingMp4Path = randomWebmPath.replace('.webm', '.mp4');
+
+    webmVideos[randomWebmPath]().then(mod => {
+      setBackgroundVideo(prev => ({ ...prev, webm: mod.default }));
+    });
+
+    if (mp4Videos[correspondingMp4Path]) {
+      mp4Videos[correspondingMp4Path]().then(mod => {
+        setBackgroundVideo(prev => ({ ...prev, mp4: mod.default }));
+      });
+    }
+
   }, []);
 
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -32,7 +51,6 @@ const App: React.FC = () => {
       {/* Video with ref and attributes */}
       <video
         ref={videoRef}
-        src={backgroundVideo}
         autoPlay
         loop
         playsInline
@@ -46,7 +64,10 @@ const App: React.FC = () => {
           objectFit: 'cover',
           zIndex: -1,
         }}
-      />
+      >
+        <source src={backgroundVideo.webm} type="video/webm" />
+        <source src={backgroundVideo.mp4} type="video/mp4" />
+      </video>
 
       <FallingObject src={fallingImage} />
 
