@@ -81,9 +81,9 @@ const App: React.FC = () => {
           position: 'absolute',
           top: 0,
           left: 0,
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
+          width: '100vw',
+          height: '100vh',
+          objectFit: 'fill',
           zIndex: -1,
         }}
       >
